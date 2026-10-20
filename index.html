@@ -377,7 +377,8 @@
           <option value="orecchiette">De Cecco Orecchiette n.91</option>
         </optgroup>
         <optgroup label="Everyday classics">
-          <option value="spaghetti">Spaghetti (standard)</option>
+          <option value="barilla-spaghetti">Barilla Spaghetti</option>
+          <option value="spaghetti">Spaghetti (standard, 8:00)</option>
           <option value="linguine">Linguine</option>
           <option value="penne">Penne</option>
           <option value="fusilli">Fusilli / Rotini</option>
@@ -580,8 +581,9 @@
           <li><code>c_w = 4.184 J/g·K</code>, <code>ΔT_w = 82 K</code> (15 °C tap → ~97 °C)</li>
           <li><code>c_p = 1.8 J/g·K</code>, <code>ΔT_p = 70 K</code></li>
           <li><code>P_eff</code> — 650&nbsp;W on the LG (1000&nbsp;W rating), 585&nbsp;W on the AEG (900&nbsp;W rating). ~65% coupling in a deep cooker.</li>
-          <li><code>γ = 0.29</code> ordinary, <code>0.66</code> bronze — more of the heat-up already cooks a bronze die (333&nbsp;g / 1&nbsp;l / 8:00 spaghetti → 14:00; 154&nbsp;g / 617&nbsp;ml Spaghetti al Bronzo → 17:20)</li>
-          <li><code>t_die = max(0, 5.31 + 0.58·(t_pkg − 11))</code> min if bronze-cut. Package cottura carries thickness (284&nbsp;g / 902&nbsp;ml Spaghetti al Bronzo → 18:20; 250&nbsp;g / 834&nbsp;ml Spaghettoni al Bronzo → 19:40)</li>
+          <li><code>γ = 0.29</code> ordinary, <code>0.66</code> bronze</li>
+          <li><code>t_die</code> bronze: <code>max(0, 5.31 + 0.58·(t_pkg − 11))</code> (284&nbsp;g / 902&nbsp;ml Spaghetti al Bronzo → 18:20; 250&nbsp;g / 834&nbsp;ml Spaghettoni → 19:40; 154&nbsp;g / 617&nbsp;ml → 17:20)</li>
+          <li><code>t_die</code> ordinary: <code>max(0, 1.11·(t_pkg − 8))</code> — longer box numbers need more still-cooker lag (333&nbsp;g / 1&nbsp;l / 8:00 → 14:00; 250&nbsp;g / 834&nbsp;ml Barilla Spaghetti 10:00 → 17:00)</li>
         </ul>
         Result rounded to the nearest 10&nbsp;s.
         <p style="margin-top:.7rem" id="breakdown"></p>
@@ -832,6 +834,7 @@
         'fusilli-lunghi': { note: 'Package 13:00 · bronze', pkg: 13, bronze: true },
         'orecchiette': { note: 'Package 11:00 · bronze', pkg: 11, bronze: true },
         'spaghetti': { note: 'Package 8:00', pkg: 8, bronze: false },
+        'barilla-spaghetti': { note: 'Package 10:00 · Barilla classic', pkg: 10, bronze: false },
         'linguine': { note: 'Package 9:00', pkg: 9, bronze: false },
         'penne': { note: 'Package 11:00', pkg: 11, bronze: false },
         'fusilli': { note: 'Package 11:00', pkg: 11, bronze: false },
@@ -907,7 +910,9 @@
         const ad = this.alDente(pasta.pkg)
         const tHeat = (waterMl * 4.184 * 82 + pastaG * 1.8 * 70) / this.peff() / 60
         const load = (1 - (pasta.bronze ? 0.66 : 0.29)) * tHeat
-        const die = pasta.bronze ? Math.max(0, 5.31 + 0.58 * (pasta.pkg - 11)) : 0
+        const die = pasta.bronze
+          ? Math.max(0, 5.31 + 0.58 * (pasta.pkg - 11))
+          : Math.max(0, 1.11 * (pasta.pkg - 8))
         return { ad, load, tHeat, die, t: ad + load + die }
       },
       peff() { return this.microwaves[this.microwave].peff },
